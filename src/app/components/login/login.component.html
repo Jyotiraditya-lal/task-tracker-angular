@@ -1,0 +1,25 @@
+<!-- app.component.html -->
+<div class="card-container">
+  <p-card header="Login" [style]="{'width': 'max-content'}" class="login-card">
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+      <div>
+        <label for="email">Email</label>
+        <input id="email" pInputText formControlName="email" type="email">
+        <p style="color: red;" *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.errors">This field is required</p>
+      </div>
+
+      <div>
+        <label for="password">Password</label>
+        <input id="password" pInputText formControlName="password" type="password">
+        <p style="color: red;" *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.errors">This field is required</p>
+      </div>
+
+      <div>
+        <button pButton type="submit" label="Submit" [disabled]="loginForm.invalid"
+          class="{{loginForm.valid ? 'p-button-primary': 'p-button-secondary'}}"></button>
+      </div>
+    </form>
+  </p-card>
+</div>
+
+<p-toast></p-toast>

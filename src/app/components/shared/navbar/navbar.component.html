@@ -1,0 +1,13 @@
+<p-menubar [style]="{'backgroundColor': '#143AA2', 'border': 'none', 'width': '83rem' }">
+    <ng-template pTemplate="end">
+        <div class="navbar-wrapper w-full" style="background-color: #143AA2;">
+            <p-menubar [model]="menu" [style]="{'backgroundColor': '#143AA2', 'border': 'none' }">
+                <ng-template pTemplate="item" let-menuItems>
+                  <div class="menu-items h-full" style="cursor: pointer">
+                    <i class="{{menuItems.icon}} mr-4 ml-5 menu-icon" style="cursor: pointer; color: white;"></i>
+                  </div>
+                </ng-template>
+              </p-menubar>  
+        </div>
+    </ng-template>
+</p-menubar>

@@ -1,0 +1,58 @@
+<button pButton class="p-button-primary p-mb-2" (click)="sidebarVisible=true" icon="pi pi-plus" size="small" pTooltip="Add task" tooltipPosition="left"></button>
+
+<p-sidebar [(visible)]="sidebarVisible" [style]="{'width': '50%'}" class="p-sm:w-full" (onHide)="onReset()">
+    <ng-template pTemplate="header">
+        <p class="p-text-bold">Add Task</p>
+    </ng-template>
+    <ng-template pTemplate="content">
+        <form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()" class="p-fluid">
+            <div class="p-field">
+                <div class="flex align-items-center">
+                  <label for="Task" class="mr-1">Task Name</label>
+                  <span class="text-red-500">*</span>
+                </div>
+                <input id="Task" style="margin-top: 10px;" pInputText formControlName="taskName" type="text" class="p-inputtext mt-2" />
+                <p class="p-error" *ngIf="addTaskForm.get('taskName')?.touched && addTaskForm.get('taskName')?.invalid">Please enter a task</p>
+              </div>
+            <div class="p-field" style="margin-top: 10px;">
+                <div class="flex align-items-center">
+                    <label for="obj" class="mr-1">Task Objectives</label>
+                    <span class="text-red-500">*</span>
+                  </div>
+                <div class="p-inputgroup p-mt-2">
+                    <input style="margin-top: 10px;"  formControlName="taskObj" pInputText id="obj" type="text" class="p-inputtext" />
+                    <button style="margin-top: 10px;"  pButton icon="pi pi-plus" class="p-ml-2 p-button-secondary" pTooltip="Add" (click)="addObjectives()" type="button"></button>
+                </div>
+                <p class="p-error" *ngIf="addTaskForm.get('taskObj')?.touched && objectives.length === 0">Please enter the objectives required to finish the task</p>
+                <p-listbox [style]="{'margin-top': '10px'}" *ngIf="objectives.length > 0" class="p-mt-5" [options]="objectives" [readonly]="true" optionLabel="objective"></p-listbox>
+            </div>
+            <div class="p-field" style="margin-top: 10px;">
+                <div class="flex align-items-center">
+                    <label class="mr-1">Assigned to</label>
+                    <span class="text-red-500">*</span>
+                </div>
+                <p-dropdown [style]="{'margin-top': '10px'}" formControlName="assignedTo" class="p-mt-2" [options]="users" optionLabel="name"></p-dropdown>
+                <p class="p-error" *ngIf="addTaskForm.get('assignedTo')?.touched && addTaskForm.get('assignedTo')?.invalid">Please select the person to assign this task to</p>
+            </div>
+            <div class="p-field" style="margin-top: 10px;">
+                <div class="flex align-items-center">
+                    <label class="mr-1">Priority</label>
+                    <span class="text-red-500">*</span>
+                  </div>
+                <p-dropdown [style]="{'margin-top': '10px'}" formControlName="priority" class="p-mt-2" [options]="priorityOptions"></p-dropdown>
+                <p class="p-error" *ngIf="addTaskForm.get('priority')?.touched && addTaskForm.get('priority')?.invalid">Please select a task priority</p>
+            </div>
+            <div class="p-field" style="margin-top: 10px;">
+                <div class="flex align-items-center">
+                    <label class="mr-1">Start date</label>
+                    <span class="text-red-500">*</span>
+                  </div>
+                <p-calendar id="startDate" [style]="{'margin-top': '10px'}"  class="p-mt-2" formControlName="startDate" dateFormat="dd-mm-yy" [minDate]="minDate"></p-calendar>
+                <p class="p-error" *ngIf="addTaskForm.get('startDate')?.touched && addTaskForm.get('startDate')?.invalid">Please select a date</p>
+            </div>
+            <div class="p-field p-text-center p-mt-4 w-2">
+                <button pButton class="{{addTaskForm.invalid || objectives.length == 0 ? 'p-button-secondary' : 'p-button-primary'}}" size="small" label="Submit" style="margin-top: 10px;" [disabled]="addTaskForm.invalid || objectives.length === 0" type="submit"></button>
+            </div>
+        </form>
+    </ng-template>
+</p-sidebar>

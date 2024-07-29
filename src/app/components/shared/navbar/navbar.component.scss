@@ -1,0 +1,18 @@
+::ng-deep .p-menuitem-icon{
+    color: white
+}
+
+.menu-items {
+    display: flex;
+    align-items: center; 
+    width: min-content
+}
+
+.menu-items:hover{
+    background-color: rgb(2, 2, 78);
+}
+
+.menu-items:focus{
+    background-color: rgb(2, 2, 78);
+}
+  

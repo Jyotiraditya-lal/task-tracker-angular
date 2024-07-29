@@ -1,0 +1,129 @@
+<p-table [value]="tasks" [tableStyle]="{ 'width': '83rem' }" rowHover="true"    [ngStyle]="(caption === 'All tasks' && role === 'admin') || caption === 'My tasks' || caption === 'Closed tasks' ? {'cursor': 'pointer'} : {}" 
+[paginator]="true" [globalFilterFields]="['taskName', 'assignedTo.name', 'priority', 'status']" [rows]="5" *ngIf="!showDetails"> 
+    <ng-template pTemplate="caption">
+        <div class="flex align-items-center justify-content-between">
+            {{caption}}
+            <add-task setVisibility *ngIf="caption==='All tasks' || caption==='My tasks'" (taskEmitter)="emittedTask($event)" ></add-task>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="header">
+        <tr>
+            <th pSortableColumn="taskName">Task <p-sortIcon field="taskName"></p-sortIcon></th>
+            <th pSortableColumn="assignedTo.name">Assigned to <p-sortIcon field="assignedTo.name"></p-sortIcon></th>
+            <th pSortableColumn="priority">Priority <p-sortIcon field="priority"></p-sortIcon></th>
+            <th pSortableColumn="status">Status <p-sortIcon field="status"></p-sortIcon></th>
+            <th>Objectives</th>
+            <th pSortableColumn="startDate">Start date <p-sortIcon field="startDate"></p-sortIcon></th>
+            <th>Deadline</th>
+            <th setVisibility *ngIf="caption==='Closed tasks'">Actions</th>
+        </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-task>
+        <tr (click)="showDetailsPage(task)">
+            <td>{{ task.taskName }}</td>
+            <td>{{ task.assignedTo.name }}</td>
+            <td><span [innerHTML]="task.priority | priorityShade"></span></td>
+            <td><span [innerHTML]="calcStatus(task) | priorityShade"></span></td>
+            <td>
+                <p-knob [size]="45" [ngModel]="calculateCompletion(task.taskObjectives)" valueTemplate="{{calcTemplateVal(task.taskObjectives)}}/{{task.taskObjectives.length}}" [readonly]="true"></p-knob>
+            </td>
+            <td>{{task.startDate | date: 'shortDate'}}</td>
+            <td>{{ calcDeadline(task.startDate, task.priority) | date: 'shortDate' }}</td>
+            <td setVisibility *ngIf="caption==='Closed tasks'">
+                <button pButton icon="fa-regular fa-folder-open" class="p-button-primary" (click)="onReopen(task)" pTooltip="Re-open task" tooltipPosition="bottom" [rounded]="true" [text]="true"></button>
+            </td>
+        </tr>
+    </ng-template>
+</p-table>
+
+<!-- Updated Details Template -->
+<div class="Objectives" *ngIf="showDetails">
+    <p-card [style]="{'width': '83rem', 'height': '150px',}">
+        <div class="grid-container">
+            <div class="grid-header">
+                <div class="col-3">Task Name</div>
+                <div class="col-3">Assigned to</div>
+                <div class="col-3">Priority</div>
+                <div class="col-2">Status</div>
+                <div setVisibility class="col-1 action-column" *ngIf="caption !== 'Closed tasks' && !isTaskClosed">Actions</div>
+            </div>
+        
+            <div class="grid-data">
+                <div class="col-3">{{ task[0].taskName }}</div>
+                <div class="col-3">{{ task[0].assignedTo.name }}</div>
+                <div class="col-3"><span [innerHTML]="task[0].priority | priorityShade"></span></div>
+                <div class="col-2"><span [innerHTML]=" task[0].status | priorityShade"></span></div>
+                <div setVisibility class="col-1 action-buttons" *ngIf="caption !== 'Closed tasks' && !isTaskClosed">
+                    <i class="pi pi-pencil mr-2 edit-icon" (click)="onEdit()" pTooltip="Edit" tooltipPosition="bottom"></i>
+                    <i class="pi pi-trash delete-icon" (click)="onDelete()" pTooltip="Delete" tooltipPosition="bottom"></i>
+                </div>
+            </div>
+        </div>
+    </p-card>
+    <p-card header="Objectives" class="mt-4" [style]="{'width': '83rem','marginTop': '50px','boxShadow': '0px 0px 5px'}">
+        <div class="p-card-content">
+            <div *ngFor="let taskObj of task[0].taskObjectives">
+                <p-checkbox [(ngModel)]="taskObj.checked" styleClass="p-checkbox-label" [style]="{'marginTop': '20px'}" label="{{taskObj.objective}}" [disabled]="caption==='Closed tasks' || isTaskClosed" [binary]="true"></p-checkbox>
+            </div>
+        </div>
+        <ng-template pTemplate="footer">
+            <button [ngStyle]="(caption!=='Closed tasks' && !isTaskClosed) ? {'visibility': 'visible'}: {'visibility': 'hidden'}" pButton style="margin-right: 10px; margin-left: 70rem;" (click)="onSave(true)" class="p-button-success" icon="pi pi-save" pTooltip="Save" tooltipPosition="bottom" [rounded]="true" [text]="true"></button>
+            <button pButton class="p-button-danger" icon="pi pi-times" pTooltip="Cancel" (click)="onCancel()" tooltipPosition="bottom" [rounded]="true" [text]="true"></button>
+            <button pButton class="p-button-contrast" icon="fa-solid fa-folder-closed" (click)="onClose()" pTooltip="Close task" tooltipPosition="bottom" *ngIf="areAllObjectivesComplete(task[0].taskObjectives) && caption!=='Closed tasks' && !isTaskClosed" [rounded]="true" [text]="true"></button>
+        </ng-template>
+    </p-card>
+</div>
+
+<p-confirmDialog />
+
+<p-toast></p-toast>
+
+
+<p-sidebar [(visible)]="sidebarVisible" dismissible="false" showCloseIcon="false" [style]="{'width': '50%'}" class="md:w-full sm:w-full">
+    <ng-template pTemplate="header">
+        <p class="header-title">Edit {{ task[0].taskName }}</p>
+    </ng-template>
+    <ng-template pTemplate="body">
+        <div class="p-fluid p-formgrid p-grid">
+            <div class="p-field p-col-12">
+                <label for="task">Task Name</label>
+                <input id="task" pInputText [disabled]="true" type="text" placeholder="{{ task[0].taskName }}" class="p-inputtext">
+            </div>
+            <div class="p-field p-col-12">
+                <form [formGroup]="editTaskForm" (ngSubmit)="onSubmit()">
+                    <div class="p-grid">
+                        <div class="p-col-9 mt-3">
+                            <label for="obj">Task Objectives</label>
+                        </div>
+                        <div class="p-col-3 p-d-flex p-ai-end mt-3 input-group">
+                            <input formControlName="taskObj" pInputText id="obj" type="text" class="p-inputtext" />
+                            <button pButton icon="pi pi-plus" class="ml-2   btn-add" pTooltip="Add" (click)="addObjectives()" type="button"></button>
+                        </div>
+                    </div>
+                    <div class="p-field p-col-12 mt-3 objective-item" *ngIf="task[0].taskObjectives.length > 0">
+                        <div class="p-d-flex p-ai-center p-jc-between" *ngFor="let objective of task[0].taskObjectives; let i = index">
+                            <div>
+                                <span class="text-xl" >{{ objective.objective }}</span>
+                                <button pButton [style]="{'width': '25px', 'height': '8px'}" icon="pi pi-minus" class="ml-2 mt-2 btn-remove p-button-danger" pTooltip="Remove" (click)="removeObjective(i)" type="button"></button>
+                            </div>
+                        </div>
+                    </div>
+                    <p style="color: red;" *ngIf="task[0].taskObjectives.length === 0">Please enter at least one objective</p>
+                    <div class="p-field p-col-12 mt-3">
+                        <label>Assigned To</label>
+                        <p-dropdown formControlName="assignedTo" class="form-control mt-2" [options]="users" optionLabel="name"></p-dropdown>
+                    </div>
+                    <div class="p-field p-col-12 mt-3">
+                        <label>Priority</label>
+                        <p-dropdown formControlName="priority" class="form-control mt-2" [options]="priorityOptions"></p-dropdown>
+                    </div>
+                    <div class="p-col-12 p-d-flex p-jc-end mt-3">
+                        <button pButton class="p-button p-button-success" style="margin-left: 35rem;" size="small" icon="pi pi-save" pTooltip="Save changes" tooltipPosition="bottom" [disabled]="task[0].taskObjectives.length === 0" type="submit" [rounded]="true" [text]="true"></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </ng-template>
+</p-sidebar>
+
+

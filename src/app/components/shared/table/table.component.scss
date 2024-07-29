@@ -1,0 +1,103 @@
+.details {
+    .p-card {
+        width: 100%;
+    }
+
+    .mt-4 {
+        margin-top: 1rem;
+    }
+}
+
+::ng-deep .p-checkbox-label{
+    margin-top: 20px;
+}
+
+.add-task-container {
+    margin-top: 2rem;
+    text-align: center;
+
+    p {
+        font-size: 1.2rem;
+        color: #333;
+        margin-bottom: 1rem;
+    }
+
+    add-task {
+        display: inline-block;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+}
+
+::ng-deep .p-dialog .p-dialog-header .p-dialog-header-icon:last-child {
+    visibility: hidden;
+}
+ 
+
+.input-group {
+    display: flex;
+    align-items: center;
+
+    .btn-add {
+        margin-left: 0.5rem;
+        height: auto;
+    }
+}
+
+.objective-item {
+    margin-bottom: 10px;
+    padding: 10px; 
+    border: 1px solid #ccc; 
+    box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.1);
+    border-radius: 4px; 
+    background-color: #fff;
+}
+
+.grid-container {
+    display: flex;
+    flex-direction: column;
+    width: 83rem; 
+    margin-bottom: 20px; 
+}
+
+.grid-header, .grid-data {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0; 
+}
+
+.col-1, .col-2, .col-3 {
+    flex: 1;
+}
+
+
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.edit-icon {
+    color: blue;
+    cursor: pointer;
+    margin-right: 10px; 
+}
+
+.delete-icon {
+    color: red;
+    cursor: pointer;
+}
+
+
+
+
+
+
+
+
+
+
+

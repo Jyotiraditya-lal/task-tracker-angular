@@ -1,0 +1,30 @@
+.home-container {
+    padding: 2rem;
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 800px;
+    margin: 2rem auto;
+
+    h1 {
+        font-size: 2.5rem;
+        color: #333;
+        margin-bottom: 1rem;
+        text-align: center;
+    }
+
+    p {
+        font-size: 1rem;
+        line-height: 1.6;
+        color: #555;
+        margin-bottom: 1.5rem;
+
+        &:first-of-type {
+            margin-top: 1rem;
+        }
+    }
+
+    .add-task-container {
+        margin-top: 2rem;
+    }
+}
